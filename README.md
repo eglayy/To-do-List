@@ -7,7 +7,7 @@
 - `python -m venv venv` - создание виртуального окружения
 - `.\venv\Scripts\Activate` - войти в виртуальное оеружение
 - `pip install -r requirements.txt` - установка зависимостей
-- `python manage.py migrate` - примеенить миграции
+- `python manage.py migrate` - применить миграции
 - `python manage.py runserver` - запустить сервер для разработки на http://127.0.0.1:8000
 
 &copy; 2025 [Егор Шулин](https://t.me//eglayy)
