@@ -33,3 +33,4 @@ class TodoList(models.Model):
     priority = models.ForeignKey(Priority, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = models.ManyToManyField(ToDoTags)
+    image = models.ImageField(upload_to='todo_lists/', null=True, blank=True)
