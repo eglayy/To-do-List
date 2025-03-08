@@ -29,7 +29,7 @@ class ToDoTags(models.Model):
 class TodoList(models.Model):
     title = models.CharField(max_length=256)
     body = models.TextField(max_length=512)
-    note_date = models.DateTimeField()
+    date_of_note = models.DateTimeField()
     deadline = models.DateTimeField()
     priority = models.ForeignKey(Priority, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
