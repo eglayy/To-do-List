@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  postgre:
+    image:  postgres:17.2-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: todo_list
+      POSTGRES_USER: todo_list
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - "db:/var/lib/postgresql/data"
+
+volumes:
+  db:
