@@ -1,0 +1,11 @@
+{% extends 'web/base.html' %}
+{% block content %}
+    <h2>Hello, User!</h2>
+
+    {% if not user.is_anonymous %}
+    <p>Вы авторизованы как <b>{{ user.username }}</b></p>
+    {% endif %}
+
+    <a href = "https://t.me/eglayy">Telegram</a>
+    {{year}}
+{% endblock content %}
