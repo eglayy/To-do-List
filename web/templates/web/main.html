@@ -1,11 +1,20 @@
 {% extends 'web/base.html' %}
 {% block content %}
-    <h2>Hello, User!</h2>
-
     {% if not user.is_anonymous %}
     <p>Вы авторизованы как <b>{{ user.username }}</b></p>
-    {% endif %}
 
-    <a href = "https://t.me/eglayy">Telegram</a>
-    {{year}}
+    <a href="{% url 'todo_lists_add' %}">Создать лист</a>
+    <hr>
+    {% for list in todolists %}
+        <h1>{{list.title}}</h1>
+        <b>Priority:</b> <small>{{list.get_priority_display}}</small>
+        <p><b>Deadline:</b> <small>{{list.deadline}}</small></p>
+        <p>{{list.body}}</p>
+        <a href="{% url 'todo_lists_edit' list.id %}">Редактировать</a>
+        <hr>
+    {% endfor %}
+    {% else %}
+        <h2>Hello, User!</h2>
+
+    {% endif %}
 {% endblock content %}
