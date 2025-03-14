@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from web.models import TodoList, Priority
+from web.models import TodoList
 
 User = get_user_model()
 
@@ -27,8 +27,8 @@ class AuthForm(forms.Form):
 
 
 class ToDoListForm(forms.ModelForm):
-    deadline = forms.CharField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}))
-    priority = forms.ChoiceField(choices=Priority.PRIORITY_CHOICES, widget=forms.Select, initial=Priority.MEDIUM)
+    deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"))
+    priority = forms.ChoiceField(choices=TodoList.PRIORITY_CHOICES, widget=forms.Select, initial=TodoList.MEDIUM)
 
     def save(self, commit=True):
         self.instance.user = self.initial['user']
@@ -36,4 +36,4 @@ class ToDoListForm(forms.ModelForm):
 
     class Meta:
         model = TodoList
-        fields = ("title", "body", "image", "tags")
+        exclude = ('tags', 'user', 'image')

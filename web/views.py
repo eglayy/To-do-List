@@ -3,14 +3,14 @@ from datetime import datetime
 from web.forms import RegistrationForm, AuthForm, ToDoListForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
+from web.models import TodoList
+
 User = get_user_model()
 
 
 def main_view(request):
-    year = datetime.now().year
-    return render(request, "web/main.html", {
-        "year": year
-    })
+    todolists = TodoList.objects.all()
+    return render(request, "web/main.html", {"todolists": todolists})
 
 
 def registration_view(request):
@@ -50,12 +50,12 @@ def logout_view(request):
     return redirect("main")
 
 
-def todo_list_add_view(request):
-    date_of_note = datetime.now()
-    form = ToDoListForm()
+def todo_list_edit_view(request, id=None):
+    todolist = TodoList.objects.get(id=id) if id is not None else None
+    form = ToDoListForm(instance=todolist)
     if request.method == 'POST':
-        form = ToDoListForm(data=request.POST, initial={"user": request.user})
+        form = ToDoListForm(data=request.POST, instance=todolist, initial={"user": request.user})
         if form.is_valid():
             form.save()
             return redirect("main")
-    return render(request, "web/todo_list_form.html", {"form": form, "date_od_note": date_of_note})
+    return render(request, "web/todo_list_form.html", {"form": form})
