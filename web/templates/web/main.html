@@ -10,6 +10,9 @@
         <b>Priority:</b> <small>{{list.get_priority_display}}</small>
         <p><b>Deadline:</b> <small>{{list.deadline}}</small></p>
         <p>{{list.body}}</p>
+        {% if list.image %}
+        <p><img src="{{list.image.url}}" width="300"></p>
+        {% endif %}
         <a href="{% url 'todo_lists_edit' list.id %}">Редактировать</a>
         <hr>
     {% endfor %}

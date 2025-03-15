@@ -54,7 +54,7 @@ def todo_list_edit_view(request, id=None):
     todolist = TodoList.objects.get(id=id) if id is not None else None
     form = ToDoListForm(instance=todolist)
     if request.method == 'POST':
-        form = ToDoListForm(data=request.POST, instance=todolist, initial={"user": request.user})
+        form = ToDoListForm(data=request.POST, files=request.FILES, instance=todolist, initial={"user": request.user})
         if form.is_valid():
             form.save()
             return redirect("main")
