@@ -20,10 +20,10 @@ class TodoList(models.Model):
         (LOW, "Low"),
     ]
 
-    title = models.CharField(max_length=256)
-    body = models.TextField(max_length=512, default="")
+    title = models.CharField(max_length=256, verbose_name="Название")
+    body = models.TextField(max_length=512, default="", verbose_name="To-do лист")
+    image = models.ImageField(upload_to='todo_lists/', null=True, blank=True, verbose_name="Фото")
     deadline = models.DateTimeField()
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=MEDIUM)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = models.ManyToManyField(ToDoTags)
-    image = models.ImageField(upload_to='todo_lists/', null=True, blank=True)

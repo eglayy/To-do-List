@@ -27,8 +27,8 @@ class AuthForm(forms.Form):
 
 
 class ToDoListForm(forms.ModelForm):
-    deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"))
-    priority = forms.ChoiceField(choices=TodoList.PRIORITY_CHOICES, widget=forms.Select, initial=TodoList.MEDIUM)
+    deadline = forms.DateTimeField(widget=forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%m"), label="Дедлайн")
+    priority = forms.ChoiceField(choices=TodoList.PRIORITY_CHOICES, widget=forms.Select, initial=TodoList.MEDIUM, label="Приоритет")
 
     def save(self, commit=True):
         self.instance.user = self.initial['user']
@@ -36,4 +36,4 @@ class ToDoListForm(forms.ModelForm):
 
     class Meta:
         model = TodoList
-        exclude = ('tags', 'user', 'image')
+        exclude = ('tags', 'user')
