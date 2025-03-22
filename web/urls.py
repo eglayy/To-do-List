@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from web.views import main_view, registration_view, auth_view, logout_view, todo_list_edit_view
+from web.views import main_view, registration_view, auth_view, logout_view, todo_list_edit_view, tags_view, \
+tags_delete_view, todolist_delete_view
 
 urlpatterns = [
     path('', main_view, name="main"),
@@ -9,7 +10,10 @@ urlpatterns = [
     path("auth/", auth_view, name="auth"),
     path("logout/", logout_view, name="logout"),
     path("todo_list/add/", todo_list_edit_view, name="todo_lists_add"),
-    path("todo_list/<int:id>/", todo_list_edit_view, name="todo_lists_edit")
+    path("todo_list/<int:id>/", todo_list_edit_view, name="todo_lists_edit"),
+    path("todo_list/delete/<int:id>/", todolist_delete_view, name="todo_lists_delete"),
+    path("tags/", tags_view, name="tags"),
+    path("tags/<int:id>", tags_delete_view, name="tags_delete"),
 ]
 
 if settings.DEBUG:

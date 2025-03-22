@@ -12,6 +12,7 @@
             <a href="{% url 'registration' %}">Регистрация</a>
             <a href="{% url 'auth' %}">Авторизация</a>
         {% else %}
+            <a href="{% url 'tags' %}">Теги</a>
             <a href="{% url 'logout' %}">Выход</a>
         {% endif %}
     </nav>

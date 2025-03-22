@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from web.models import TodoList
+from web.models import TodoList, ToDoTags
 
 User = get_user_model()
 
@@ -36,4 +36,12 @@ class ToDoListForm(forms.ModelForm):
 
     class Meta:
         model = TodoList
-        exclude = ('tags', 'user')
+        exclude = ('user', )
+
+class TagsForm(forms.ModelForm):
+    def save(self, commit=True):
+        self.instance.user = self.initial['user']
+        return super().save(commit)
+    class Meta:
+        model = ToDoTags
+        fields = ("title", )
