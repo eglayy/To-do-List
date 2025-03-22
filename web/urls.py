@@ -11,7 +11,7 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),
     path("todo_list/add/", todo_list_edit_view, name="todo_lists_add"),
     path("todo_list/<int:id>/", todo_list_edit_view, name="todo_lists_edit"),
-    path("todo_list/delete/<int:id>/", todolist_delete_view, name="todo_lists_delete"),
+    path("todo_list/<int:id>/delete/", todolist_delete_view, name="todo_lists_delete"),
     path("tags/", tags_view, name="tags"),
     path("tags/<int:id>", tags_delete_view, name="tags_delete"),
 ]
