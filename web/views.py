@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect
-from datetime import datetime
-from web.forms import RegistrationForm, AuthForm, ToDoListForm
+from web.forms import RegistrationForm, AuthForm, ToDoListForm, TagsForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
-from web.models import TodoList
+from web.models import TodoList, ToDoTags
 
 User = get_user_model()
 
 
 def main_view(request):
-    todolists = TodoList.objects.all()
+    if not request.user.is_anonymous:
+        todolists = TodoList.objects.filter(user=request.user).order_by('-priority')
+    else:
+        todolists = []
     return render(request, "web/main.html", {"todolists": todolists})
 
 
@@ -59,3 +61,26 @@ def todo_list_edit_view(request, id=None):
             form.save()
             return redirect("main")
     return render(request, "web/todo_list_form.html", {"form": form})
+
+
+def todolist_delete_view(request, id):
+    todolist = TodoList.objects.get(id=id)
+    todolist.delete()
+    return redirect('main')
+
+
+def tags_view(request, id=None):
+    tags = ToDoTags.objects.all()
+    form = TagsForm()
+    if request.method == 'POST':
+        form = TagsForm(data=request.POST, initial={"user": request.user})
+        if form.is_valid():
+            form.save()
+            return redirect('tags')
+    return render(request, "web/tags.html", {"tags": tags, "form": form})
+
+
+def tags_delete_view(request, id):
+    tag = ToDoTags.objects.get(id=id)
+    tag.delete()
+    return redirect('tags')

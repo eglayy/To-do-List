@@ -5,9 +5,11 @@ User = get_user_model()
 
 
 class ToDoTags(models.Model):
-    title = models.CharField(max_length=256)
+    title = models.CharField(max_length=256, verbose_name="Название")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.title
 
 class TodoList(models.Model):
     HIGH = 3
@@ -26,4 +28,4 @@ class TodoList(models.Model):
     deadline = models.DateTimeField()
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=MEDIUM)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    tags = models.ManyToManyField(ToDoTags)
+    tags = models.ManyToManyField(ToDoTags, verbose_name="Теги", blank=True)

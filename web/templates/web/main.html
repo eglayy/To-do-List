@@ -7,6 +7,14 @@
     <hr>
     {% for list in todolists %}
         <h1>{{list.title}}</h1>
+        {% if list.tags.all.count > 0 %}
+            <p>
+                <b>Tags:</b>
+                {% for tag in list.tags.all %}
+                    {{ tag.title }}
+                {% endfor %}
+            </p>
+        {% endif %}
         <b>Priority:</b> <small>{{list.get_priority_display}}</small>
         <p><b>Deadline:</b> <small>{{list.deadline}}</small></p>
         <p>{{list.body}}</p>
@@ -14,10 +22,10 @@
         <p><img src="{{list.image.url}}" width="300"></p>
         {% endif %}
         <a href="{% url 'todo_lists_edit' list.id %}">Редактировать</a>
+        <a href="{% url 'todo_lists_delete' list.id %}">удалить</a>
         <hr>
     {% endfor %}
     {% else %}
         <h2>Hello, User!</h2>
-
     {% endif %}
 {% endblock content %}
