@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 from web.forms import RegistrationForm, AuthForm, ToDoListForm, TagsForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 
@@ -51,9 +52,9 @@ def logout_view(request):
     logout(request)
     return redirect("main")
 
-
+@login_required()
 def todo_list_edit_view(request, id=None):
-    todolist = TodoList.objects.get(id=id) if id is not None else None
+    todolist = get_object_or_404(TodoList, id=id) if id is not None else None
     form = ToDoListForm(instance=todolist)
     if request.method == 'POST':
         form = ToDoListForm(data=request.POST, files=request.FILES, instance=todolist, initial={"user": request.user})
@@ -62,13 +63,13 @@ def todo_list_edit_view(request, id=None):
             return redirect("main")
     return render(request, "web/todo_list_form.html", {"form": form})
 
-
+@login_required()
 def todolist_delete_view(request, id):
-    todolist = TodoList.objects.get(id=id)
+    todolist = get_object_or_404(TodoList, id=id)
     todolist.delete()
     return redirect('main')
 
-
+@login_required()
 def tags_view(request, id=None):
     tags = ToDoTags.objects.all()
     form = TagsForm()
@@ -79,8 +80,8 @@ def tags_view(request, id=None):
             return redirect('tags')
     return render(request, "web/tags.html", {"tags": tags, "form": form})
 
-
+@login_required()
 def tags_delete_view(request, id):
-    tag = ToDoTags.objects.get(id=id)
+    tag = get_object_or_404(ToDoTags, id=id)
     tag.delete()
     return redirect('tags')
