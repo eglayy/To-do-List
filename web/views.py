@@ -54,7 +54,7 @@ def logout_view(request):
 
 @login_required()
 def todo_list_edit_view(request, id=None):
-    todolist = get_object_or_404(TodoList, id=id) if id is not None else None
+    todolist = get_object_or_404(TodoList, user=request.user, id=id) if id is not None else None
     form = ToDoListForm(instance=todolist)
     if request.method == 'POST':
         form = ToDoListForm(data=request.POST, files=request.FILES, instance=todolist, initial={"user": request.user})
@@ -65,7 +65,7 @@ def todo_list_edit_view(request, id=None):
 
 @login_required()
 def todolist_delete_view(request, id):
-    todolist = get_object_or_404(TodoList, id=id)
+    todolist = get_object_or_404(TodoList, user=request.user, id=id)
     todolist.delete()
     return redirect('main')
 
@@ -82,6 +82,6 @@ def tags_view(request, id=None):
 
 @login_required()
 def tags_delete_view(request, id):
-    tag = get_object_or_404(ToDoTags, id=id)
+    tag = get_object_or_404(ToDoTags, user=request.user, id=id)
     tag.delete()
     return redirect('tags')
