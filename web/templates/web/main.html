@@ -4,7 +4,21 @@
     <p>Вы авторизованы как <b>{{ user.username }}</b></p>
 
     <a href="{% url 'todo_lists_add' %}">Создать лист</a>
+
     <hr>
+        <form action="">
+            <b>Фильтры:</b><br>
+
+            {% for field in filter_form %}
+                {{ field }}
+            {% endfor %}
+
+            <button>Найти</button>
+
+            <a href="?">Показать всё</a>
+        </form>
+    <hr>
+
     {% for list in todolists %}
         <h1>{{list.title}}</h1>
         {% if list.tags.all.count > 0 %}
@@ -15,17 +29,41 @@
                 {% endfor %}
             </p>
         {% endif %}
+
         <b>Priority:</b> <small>{{list.get_priority_display}}</small>
         <p><b>Deadline:</b> <small>{{list.deadline}}</small></p>
         <p>{{list.body}}</p>
         {% if list.image %}
-        <p><img src="{{list.image.url}}" width="300"></p>
+            <p><img src="{{list.image.url}}" width="300"></p>
         {% endif %}
+
         <a href="{% url 'todo_lists_edit' list.id %}">Редактировать</a>
         <a href="{% url 'todo_lists_delete' list.id %}">удалить</a>
         <hr>
     {% endfor %}
+
+    {% if total_count > 0 %}
+        Найдено совпадений: {{ total_count }}
+    {% else %}
+        Совпадений не найдено
+    {% endif %}
+
+    <nav>
+        {% if todolists.has_previous %}
+            <a href="?page=1">в начало</a>
+            <a href="?page={{ todolists.previous_page_number }}">предыдушая страница</a>
+        {% endif %}
+
+        страница {{ todolists.number }}/{{ todolists.paginator.num_pages }}
+
+        {% if todolists.has_next %}
+            <a href="?page={{ todolists.paginator.num_pages }}">в конец</a>
+            <a href="?page={{ todolists.next_page_number }}">следующая страница</a>
+        {% endif %}
+    </nav>
+
     {% else %}
         <h2>Hello, User!</h2>
+        <p><img src="media/registration images for anon users/helloUser.jpg" width="300"></p>
     {% endif %}
 {% endblock content %}

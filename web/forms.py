@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth import get_user_model
-
 from web.models import TodoList, ToDoTags
 
 User = get_user_model()
@@ -38,6 +37,7 @@ class ToDoListForm(forms.ModelForm):
         model = TodoList
         exclude = ('user', )
 
+
 class TagsForm(forms.ModelForm):
     def save(self, commit=True):
         self.instance.user = self.initial['user']
@@ -45,3 +45,18 @@ class TagsForm(forms.ModelForm):
     class Meta:
         model = ToDoTags
         fields = ("title", )
+
+
+class TodoListFilterForm(forms.Form):
+    search = forms.CharField(widget=forms.TextInput(attrs={"placeholder": "Поиск"}), required=False)
+    tag_name = forms.ModelChoiceField(
+        queryset=ToDoTags.objects.all(),
+        widget=forms.Select,
+        required=False,
+        empty_label="Выбор тега"
+    )
+    priority_name = forms.ChoiceField(
+        choices=[('', 'Выбор приоритета')] + TodoList.PRIORITY_CHOICES,
+        widget=forms.Select,
+        required=False
+    )
