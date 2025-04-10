@@ -26,9 +26,9 @@ def main_view(request):
             todolists = todolists.filter(priority=filters['priority_name'])
 
         total_count = todolists.count()
-
+        todolists = todolists.prefetch_related("tags")
         page_number = request.GET.get("page", 1)
-        paginator = Paginator(todolists, per_page=10)
+        paginator = Paginator(todolists, per_page=1000)
 
         return render(request, "web/main.html", {
             "todolists": paginator.get_page(page_number),

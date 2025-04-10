@@ -24,9 +24,8 @@
         {% if list.tags.all.count > 0 %}
             <p>
                 <b>Tags:</b>
-                {% for tag in list.tags.all %}
-                    {{ tag.title }}
-                {% endfor %}
+                <small>[ {% for tag in list.tags.all %} {{ tag.title }} {% endfor %}]
+                </small>
             </p>
         {% endif %}
 
