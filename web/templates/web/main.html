@@ -36,8 +36,10 @@
             <p><img src="{{list.image.url}}" width="300"></p>
         {% endif %}
 
+        <a href="{% url 'task_complete' list.id %}">Выполнено</a> |
         <a href="{% url 'todo_lists_edit' list.id %}">Редактировать</a>
         <a href="{% url 'todo_lists_delete' list.id %}">удалить</a>
+
         <hr>
     {% endfor %}
 
