@@ -3,10 +3,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from web.forms import RegistrationForm, AuthForm, ToDoListForm, TagsForm, TodoListFilterForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.core.paginator import Paginator
+from django.db.models import Count, Max, Min, F
+from django.db.models.functions import TruncDate
 from web.models import TodoList, ToDoTags
 
 User = get_user_model()
-
 
 def main_view(request):
     if not request.user.is_anonymous:
@@ -28,7 +29,7 @@ def main_view(request):
         total_count = todolists.count()
         todolists = todolists.prefetch_related("tags")
         page_number = request.GET.get("page", 1)
-        paginator = Paginator(todolists, per_page=1000)
+        paginator = Paginator(todolists, per_page=10)
 
         return render(request, "web/main.html", {
             "todolists": paginator.get_page(page_number),
@@ -38,6 +39,26 @@ def main_view(request):
     else:
         return render(request, "web/main.html")
 
+
+@login_required()
+def analytics_view(request):
+    overall_stats = TodoList.objects.aggregate(
+        Count("id"),
+        Max("deadline"),
+        Min("deadline")
+    )
+
+    days_stat = (
+        TodoList.objects.all()
+        .annotate(date=TruncDate("deadline"))
+        .values("date")
+        .annotate(count=Count("id"))
+    ).order_by("-date")
+    print(days_stat)
+    return render(request, "web/analytics.html", {
+        "overall_stats": overall_stats,
+        "days_stat": days_stat
+    })
 
 
 def registration_view(request):
@@ -93,6 +114,12 @@ def todolist_delete_view(request, id):
     todolist.delete()
     return redirect('main')
 
+
+def task_complete_view(request, id):
+    todolist = get_object_or_404(TodoList, user=request.user, id=id)
+    todolist.is_done = True
+    return redirect('main')
+
 @login_required()
 def tags_view(request, id=None):
     tags = ToDoTags.objects.all()
@@ -109,3 +136,4 @@ def tags_delete_view(request, id):
     tag = get_object_or_404(ToDoTags, user=request.user, id=id)
     tag.delete()
     return redirect('tags')
+

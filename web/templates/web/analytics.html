@@ -1,0 +1,16 @@
+{% extends 'web/base.html' %}
+{% block content %}
+    <h2>Аналитика</h2>
+    <p>
+        Всего <b>{{ overall_stats.id__count}}</b> todo листов. <br>
+        Максимальный дедлайн <b>{{ overall_stats.deadline__max }}</b>. <br>
+        Минимальный дедлайн <b>{{ overall_stats.deadline__min }}</b>.
+    </p>
+
+    <b>Статистика по дням</b>
+    <ul>
+        {% for day_stat in days_stat %}
+            <li><b>{{ day_stat.date }}</b> - {{ day_stat.count }} слотов</li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

@@ -35,7 +35,7 @@ class ToDoListForm(forms.ModelForm):
 
     class Meta:
         model = TodoList
-        exclude = ('user', )
+        exclude = ('user', 'is_done')
 
 
 class TagsForm(forms.ModelForm):
