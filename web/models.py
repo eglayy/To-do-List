@@ -29,3 +29,4 @@ class TodoList(models.Model):
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=MEDIUM)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = models.ManyToManyField(ToDoTags, verbose_name="Теги", blank=True)
+    is_done = models.BooleanField(default=False)

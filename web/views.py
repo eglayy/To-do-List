@@ -10,7 +10,7 @@ User = get_user_model()
 
 def main_view(request):
     if not request.user.is_anonymous:
-        todolists = TodoList.objects.filter(user=request.user).order_by('-priority')
+        todolists = TodoList.objects.filter(user=request.user, is_done=False).order_by('-priority')
 
         filter_form = TodoListFilterForm(request.GET)
         filter_form.is_valid()
@@ -92,6 +92,42 @@ def todolist_delete_view(request, id):
     todolist = get_object_or_404(TodoList, user=request.user, id=id)
     todolist.delete()
     return redirect('main')
+
+def complete_task_view(request, id):
+    todolist = get_object_or_404(TodoList, user=request.user, id=id)
+    todolist.is_done = True
+    todolist.save()
+    return redirect('main')
+
+@login_required()
+def completed_tasks_view(request):
+    todolists = TodoList.objects.filter(user=request.user, is_done=True).order_by('-priority')
+
+    filter_form = TodoListFilterForm(request.GET)
+    filter_form.is_valid()
+    filters = filter_form.cleaned_data
+
+    if filters.get('search'):
+        todolists = todolists.filter(
+            title__icontains=filters['search'])  # icontains - поиск подстроки в title без учета регистра
+
+    if filters.get('tag_name'):
+        todolists = todolists.filter(tags=filters['tag_name'])
+
+    if filters.get('priority_name'):
+        todolists = todolists.filter(priority=filters['priority_name'])
+
+    total_count = todolists.count()
+    todolists = todolists.prefetch_related("tags")
+    page_number = request.GET.get("page", 1)
+    paginator = Paginator(todolists, per_page=15)
+
+    return render(request, "web/completed_tasks.html", {
+        "todolists": paginator.get_page(page_number),
+        "filter_form": filter_form,
+        "total_count": total_count,
+    })
+
 
 @login_required()
 def tags_view(request, id=None):

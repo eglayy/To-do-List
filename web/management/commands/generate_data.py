@@ -23,9 +23,9 @@ class Command(BaseCommand):
                     body="auto",
                     deadline=current_date + timedelta(hours=randint(0, 12)),
                     priority=random.choice((1, 2, 3)),
+                    is_done=random.choice([True, False]),
                     user=user,
                 ))
-
         saved_lists = TodoList.objects.bulk_create(todolists)
 
         todolist_tags = []

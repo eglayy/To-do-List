@@ -1,9 +1,6 @@
 {% extends 'web/base.html' %}
 {% block content %}
-    {% if not user.is_anonymous %}
-    <p>Вы авторизованы как <b>{{ user.username }}</b></p>
-
-    <a href="{% url 'todo_lists_add' %}">Создать лист</a>
+    <h2>Выполненные задачи</h2>
 
     <hr>
         <form action="">
@@ -35,11 +32,7 @@
         {% if list.image %}
             <p><img src="{{list.image.url}}" width="300"></p>
         {% endif %}
-
-        <a href="{% url 'complete_task' list.id %}">Выполнено</a> |
-        <a href="{% url 'todo_lists_edit' list.id %}">Редактировать</a>
-        <a href="{% url 'todo_lists_delete' list.id %}">удалить</a>
-        <hr>
+    <hr>
     {% endfor %}
 
     {% if total_count > 0 %}
@@ -61,10 +54,5 @@
             <a href="?page={{ todolists.next_page_number }}">следующая страница</a>
         {% endif %}
     </nav>
-
-    {% else %}
-        <h2>Hello, User!</h2>
-        <p><img src="media/registration images for anon users/helloUser.jpg" width="300"></p>
-    {% endif %}
 
 {% endblock content %}
