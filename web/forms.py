@@ -60,3 +60,7 @@ class TodoListFilterForm(forms.Form):
         widget=forms.Select,
         required=False
     )
+
+
+class ImportForm(forms.Form):
+    file = forms.FileField()

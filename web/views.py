@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from web.forms import RegistrationForm, AuthForm, ToDoListForm, TagsForm, TodoListFilterForm
+from web.forms import RegistrationForm, AuthForm, ToDoListForm, TagsForm, TodoListFilterForm, ImportForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.core.paginator import Paginator
 from django.db.models import Count, Min, Max, F, Q
 from web.models import TodoList, ToDoTags
 from django.db.models.functions import TruncDate
+from web.services import filter_todolists, export_todolists_csv, import_todolists_from_csv
+from django.http import HttpResponse
 
 User = get_user_model()
 
@@ -16,21 +18,20 @@ def main_view(request):
 
         filter_form = TodoListFilterForm(request.GET)
         filter_form.is_valid()
-        filters = filter_form.cleaned_data
-
-        if filters.get('search'):
-            todolists = todolists.filter(title__icontains=filters['search']) #icontains - поиск подстроки в title без учета регистра
-
-        if filters.get('tag_name'):
-            todolists = todolists.filter(tags=filters['tag_name'])
-
-        if filters.get('priority_name'):
-            todolists = todolists.filter(priority=filters['priority_name'])
+        todolists = filter_todolists(todolists, filter_form.cleaned_data)
 
         total_count = todolists.count()
         todolists = todolists.prefetch_related("tags")
+
         page_number = request.GET.get("page", 1)
         paginator = Paginator(todolists, per_page=15)
+
+        if request.GET.get("export") == "csv":
+            response = HttpResponse(
+                content_type='text/csv',
+                headers={"Content-Disposition": "attachment; filename=todolists.csv"}
+            )
+            return export_todolists_csv(todolists, response)
 
         return render(request, "web/main.html", {
             "todolists": paginator.get_page(page_number),
@@ -40,6 +41,17 @@ def main_view(request):
     else:
         return render(request, "web/main.html")
 
+@login_required()
+def import_view(request):
+    if not request.user.is_anonymous:
+        if request.method == 'POST':
+            form = ImportForm(files=request.FILES)
+            if form.is_valid():
+                import_todolists_from_csv(form.cleaned_data['file'])
+                # return redirect("main")
+        return render(request, "web/import.html", {"form": ImportForm()})
+    else:
+        return render(request, "web/main.html")
 
 @login_required()
 def analytic_view(request):
@@ -129,22 +141,20 @@ def completed_tasks_view(request):
 
     filter_form = TodoListFilterForm(request.GET)
     filter_form.is_valid()
-    filters = filter_form.cleaned_data
-
-    if filters.get('search'):
-        todolists = todolists.filter(
-            title__icontains=filters['search'])  # icontains - поиск подстроки в title без учета регистра
-
-    if filters.get('tag_name'):
-        todolists = todolists.filter(tags=filters['tag_name'])
-
-    if filters.get('priority_name'):
-        todolists = todolists.filter(priority=filters['priority_name'])
+    todolists = filter_todolists(todolists, filter_form.cleaned_data)
 
     total_count = todolists.count()
     todolists = todolists.prefetch_related("tags")
+
     page_number = request.GET.get("page", 1)
     paginator = Paginator(todolists, per_page=15)
+
+    if request.GET.get("export") == "csv":
+        response = HttpResponse(
+            content_type='text/csv',
+            headers={"Content-Disposition": "attachment; filename=CompletedTodolists.csv"}
+        )
+        return export_todolists_csv(todolists, response)
 
     return render(request, "web/completed_tasks.html", {
         "todolists": paginator.get_page(page_number),
