@@ -3,7 +3,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from web.forms import RegistrationForm, AuthForm, ToDoListForm, TagsForm, TodoListFilterForm
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.core.paginator import Paginator
+from django.db.models import Count, Min, Max, F, Q
 from web.models import TodoList, ToDoTags
+from django.db.models.functions import TruncDate
 
 User = get_user_model()
 
@@ -39,6 +41,28 @@ def main_view(request):
         return render(request, "web/main.html")
 
 
+@login_required()
+def analytic_view(request):
+    overall_stats = TodoList.objects.aggregate(
+       tasks_count=Count("id"),
+       max_deadline=Max("deadline"),
+       min_deadline=Min("deadline")
+    )
+
+    days_stat = (
+        TodoList.objects.all()
+        .annotate(date=TruncDate("deadline"))
+        .values("date")
+        .annotate(
+            count=Count("id"),
+            is_done_count=Count("id", filter=Q(is_done=True))
+        ).order_by("-date")
+    )
+
+    return render(request, "web/analytic.html", {
+        "overall_stats": overall_stats,
+        "days_stat": days_stat,
+    })
 
 def registration_view(request):
     form = RegistrationForm()
