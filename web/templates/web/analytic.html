@@ -1,0 +1,16 @@
+{% extends 'web/base.html' %}
+{% block content %}
+    <h2>Аналитика</h2>
+    <p>
+        Всего <b>{{ overall_stats.tasks_count }}</b> слотов.<br>
+        Максимальная дата дедлайна: <b>{{ overall_stats.max_deadline }}</b>. <br>
+        Минимальная дата дедлайна: <b>{{ overall_stats.min_deadline  }}</b>. <br>
+    </p>
+
+    <b>Статистика по дням</b>
+    <ul>
+        {% for day_stat in days_stat %}
+            <li><b>{{ day_stat.date }}</b> - {{ day_stat.count }} слотов, {{ day_stat.is_done_count }} выполнено</li>
+        {% endfor %}
+    </ul>
+{% endblock content %}
