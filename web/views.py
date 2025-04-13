@@ -41,19 +41,16 @@ def main_view(request):
     else:
         return render(request, "web/main.html")
 
-@login_required()
+@login_required
 def import_view(request):
-    if not request.user.is_anonymous:
-        if request.method == 'POST':
-            form = ImportForm(files=request.FILES)
-            if form.is_valid():
-                import_todolists_from_csv(form.cleaned_data['file'])
-                # return redirect("main")
-        return render(request, "web/import.html", {"form": ImportForm()})
-    else:
-        return render(request, "web/main.html")
+    if request.method == "POST":
+        form = ImportForm(files=request.FILES)
+        if form.is_valid():
+            import_todolists_from_csv(form.cleaned_data["file"], request.user.id)
+            return redirect("main")
+    return render(request, "web/import.html", {"form": ImportForm()})
 
-@login_required()
+@login_required
 def analytic_view(request):
     overall_stats = TodoList.objects.aggregate(
        tasks_count=Count("id"),
@@ -112,7 +109,7 @@ def logout_view(request):
     logout(request)
     return redirect("main")
 
-@login_required()
+@login_required
 def todo_list_edit_view(request, id=None):
     todolist = get_object_or_404(TodoList, user=request.user, id=id) if id is not None else None
     form = ToDoListForm(instance=todolist)
@@ -123,7 +120,7 @@ def todo_list_edit_view(request, id=None):
             return redirect("main")
     return render(request, "web/todo_list_form.html", {"form": form})
 
-@login_required()
+@login_required
 def todolist_delete_view(request, id):
     todolist = get_object_or_404(TodoList, user=request.user, id=id)
     todolist.delete()
@@ -135,7 +132,7 @@ def complete_task_view(request, id):
     todolist.save()
     return redirect('main')
 
-@login_required()
+@login_required
 def completed_tasks_view(request):
     todolists = TodoList.objects.filter(user=request.user, is_done=True).order_by('-priority')
 
@@ -163,7 +160,7 @@ def completed_tasks_view(request):
     })
 
 
-@login_required()
+@login_required
 def tags_view(request, id=None):
     tags = ToDoTags.objects.all()
     form = TagsForm()
@@ -174,7 +171,7 @@ def tags_view(request, id=None):
             return redirect('tags')
     return render(request, "web/tags.html", {"tags": tags, "form": form})
 
-@login_required()
+@login_required
 def tags_delete_view(request, id):
     tag = get_object_or_404(ToDoTags, user=request.user, id=id)
     tag.delete()

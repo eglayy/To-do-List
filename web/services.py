@@ -1,4 +1,6 @@
+from web.models import TodoList, ToDoTags
 import csv
+
 
 def filter_todolists(todolists_qs, filters: dict):
     if filters.get('search'):
@@ -24,5 +26,31 @@ def export_todolists_csv(todolists_qs, response):
 
     return response
 
-def import_todolists_from_csv(file):
-    print(file)
+def import_todolists_from_csv(file, user_id):
+    strs_from_file = (row.decode() for row in file)
+    reader = csv.DictReader(strs_from_file)
+
+    todolists = []
+    todolist_tags = []
+    for row in reader:
+        todolists.append(TodoList(
+            title=row["title"],
+            body=row["body"],
+            priority=row["priority"],
+            deadline=row["deadline"],
+            is_done=row["is_done"],
+            user_id=user_id
+        ))
+        todolist_tags.append(row['tags'].split(" ") if row['tags'] else [])
+
+    tags_map = dict(ToDoTags.objects.all().values_list("title", "id"))
+    saved_todolists = TodoList.objects.bulk_create(todolists)
+
+    todo_tags = []
+    for todolist, todolist_tags_item in zip(saved_todolists, todolist_tags):
+        for tag in todolist_tags_item:
+            tag_id = tags_map[tag]
+            todo_tags.append(
+                TodoList.tags.through(todolist_id=todolist.id, todotags_id=tag_id)
+            )
+    TodoList.tags.through.objects.bulk_create(todo_tags)
