@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from web.views import main_view, registration_view, auth_view, logout_view, todo_list_edit_view, tags_view, \
-tags_delete_view, todolist_delete_view, complete_task_view, completed_tasks_view, analytic_view
+tags_delete_view, todolist_delete_view, complete_task_view, completed_tasks_view, analytic_view, import_view
 
 urlpatterns = [
     path('', main_view, name="main"),
@@ -16,7 +16,8 @@ urlpatterns = [
     path("tags/<int:id>/", tags_delete_view, name="tags_delete"),
     path("tags/<int:id>/complete/", complete_task_view, name="complete_task"),
     path("completed_tasks/", completed_tasks_view, name="completed_tasks"),
-    path("todo_list/analytic/", analytic_view, name="tasks_analytic"),
+    path("analytic/", analytic_view, name="tasks_analytic"),
+    path("import/", import_view, name="import"),
 ]
 
 if settings.DEBUG:
